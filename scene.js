@@ -8,8 +8,11 @@ const cubeSize = 0.2 - eps;
 
 const assignedCubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize,1,1,1);
 
-const assignedCubeMaterial = new THREE.MeshBasicMaterial({color : 0xa01010,
+const assignedCubeMaterial = new THREE.MeshBasicMaterial({color : 0x404040,
                                                             transparent : false });
+
+const noSolutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0xa01010,
+                                                                transparent : false });
 
 const solutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0x20e020,
                                                             transparent : false});                                                         
@@ -368,7 +371,14 @@ export class FSTViewerScene {
             const result = new THREE.Vector3(xC, yC, xzC);
             result.applyMatrix4(transform);
 
-            const mat = row["Solutions?"] == "Yes" ? solutionsCubeMaterial : assignedCubeMaterial;
+            let mat;
+            if(row["Solutions?"] == "Yes")
+                mat = solutionsCubeMaterial;
+            else if(row["Completed?"] == "Yes")
+                mat = noSolutionsCubeMaterial;
+            else 
+                mat = assignedCubeMaterial;
+
             const assignedBlockMesh = new THREE.Mesh(assignedCubeGeo, mat);
             assignedBlockMesh.position.copy(result);
             if(row["Platform X"] == "-1945")
