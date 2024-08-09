@@ -227,7 +227,7 @@ export class FSTViewerScene {
 
                         if(this.#sliceSign == "plus" && gridXSign < 0 ||
                             this.#sliceSign == "minus" && gridXSign > 0) {
-                                genGrid = false;
+                                break;
                         }
                         else if(gridXSign > 0){
                             this.#grids.add(this.#generateGridLines(gridPlusXMin, gridPlusXMax,
@@ -253,7 +253,7 @@ export class FSTViewerScene {
 
                         if(this.#sliceSign == "plus" && gridXZSign < 0 ||
                             this.#sliceSign == "minus" && gridXZSign > 0) {
-                                genGrid = false;
+                                break;
                         }
                         else if(gridXZSign > 0){
                             this.#grids.add(this.#generateGridLines(-1, 1,
