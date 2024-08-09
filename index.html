@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="styles.css">
-
+  <link href="https://fonts.cdnfonts.com/css/super-mario-64" rel="stylesheet">
   <script type="importmap">
     {
       "imports": {
@@ -20,7 +20,172 @@
 
 <body>
   <div class="render-container" id="renderContainer">
+  </div>
+  <div class="user-settings-menu" id="userSettingsContainer">
+    <div class="user-settings-title">
+      Visualizer Settings
+    </div>
 
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        <label for="platformDropdown" id="platformDropdownLabel">Platform: </label>
+        <select id="platformDropdown">
+          <option value="pyra">Pyra (-1945)</option>
+          <option value="mythra">Mythra (-2866)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Slice Tool:
+      </div>
+      <div class="user-settings-sublevel">
+        <div class="user-settings-text-lvl2">
+          <label for="sliceToggle" id="sliceToggleLabel">Enabled:</label>
+          <input type="checkbox" id="sliceToggle">
+        </div>
+        <div class="user-settings-text-lvl2">
+          <div id="sliceSignContainer">
+            <label for="sliceSignDropdown" id="sliceSignLabel">Slice Region:&nbsp;</label>
+            <select id="sliceSignDropdown" disabled>
+              <option value="plusOrMinus">+/-</option>
+              <option value="plus">+</option>
+              <option value="minus">-</option>
+            </select>
+          </div>
+          <div id="sliceAxisContainer">
+            <label for="sliceAxisDropdown" id="sliceAxisLabel">Slice Axis:&nbsp;</label>
+            <select id="sliceAxisDropdown" disabled>
+              <option value="Y">Y</option>
+              <option value="X">X</option>
+              <option value="XZSum">XZ Sum</option>
+            </select>
+          </div>
+          <div id="sliceRangeContainer" >
+            <label for="sliceRangeSlider" id="sliceRangeLabel">Slice Value:&nbsp;</label>
+            <input type="range" id="sliceRangeSlider" min="0" max="0.9" step="0.1" disabled>
+          </div>
+          <div class="user-settings-sublevel">
+            <div class="user-settings-text-slider-value" id="sliceValueLabel">
+              <label id="sliceValueLabel">(...)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Grid Settings:
+      </div>
+      <div class="user-settings-sublevel">
+        <div class="user-settings-text-lvl2">
+          <label for="gridToggle" id="gridToggleLabel">Enabled:</label>
+          <input type="checkbox" id="gridToggle">
+        </div>
+        <div class="user-settings-text-lvl2">
+          <label for="gridColorPicker" id="gridColorLabel">Line Color:&nbsp;</label>
+          <input type="color" id="gridColorPicker">
+        </div>
+        <div class="user-settings-text-lvl2">
+          <div id="gridOpacityContainer" >
+            <label for="gridOpacitySlider" id="gridOpacitySliderLabel">Opacity:&nbsp;</label>
+            <input type="range" id="gridOpacitySlider" min="0" max="1" step="0.01" disabled>
+          </div>
+          <div class="user-settings-sublevel">
+            <div class="user-settings-text-slider-value" id="gridOpacityValueLabel">
+              <label id="gridOpacityValueLabel">(...)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Keyboard Shortcuts:
+      </div>
+      <div class="user-settings-sublevel">
+        <div class="user-settings-text-lvl2">
+          Swap Platform - P
+        </div>
+        <div class="user-settings-text-lvl2">
+          Ortho Views - 1 to 6
+        </div>
+        <div class="user-settings-text-lvl2">
+          Refresh Data - R
+        </div>
+        <div class="user-settings-text-lvl2">
+          Show/Hide Settings - H
+        </div>
+      </div>
+    </div>
+
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        
+      </div>
+    </div>
+
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hidden" id="runInfoWindow">
+    <div class="run-info-title">
+      Run Info
+    </div>
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Normal Range:
+      </div>
+      <div class="user-settings-sublevel">
+        <div class="user-settings-text-lvl2">
+          X:&nbsp;<label id="runInfoXRange">(...)</label>
+        </div>
+        <div class="user-settings-text-lvl2">
+          Y:&nbsp;<label id="runInfoYRange">(...)</label>
+        </div>
+        <div class="user-settings-text-lvl2">
+          XZ Sum:&nbsp;<label id="runInfoXZSumRange">(...)</label>
+        </div>
+      </div>
+    </div>
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Platform:&nbsp;<label id="runInfoPlatform">...</label>
+      </div>
+    </div>
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        By:&nbsp;<label id="runInfoName">...</label>
+      </div>
+      <div class="user-settings-text-lvl1">
+        Date Started:&nbsp;<label id="runInfoDate">...</label>
+      </div>
+    </div>
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl1">
+        Completed?&nbsp;<label id="runInfoCompleted">...</label>
+      </div>
+      <div class="user-settings-text-lvl1">
+        Solutions?&nbsp;<label id="runInfoSolutions">...</label>
+      </div>
+      <div class="user-settings-text-lvl1">
+        Latest Stage:&nbsp;<label id="runInfoStage">...</label>
+      </div>
+    </div>
+    <br>
+    <div class="user-settings-level">
+      <div class="user-settings-text-lvl3">
+        (Left-Click Background to Close)
+      </div>
+    </div>
   </div>
 </body>
 

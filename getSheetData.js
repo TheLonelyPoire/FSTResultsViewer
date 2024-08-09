@@ -27,18 +27,18 @@ export function getSheetData({ sheetID, sheetName, query, callback }){
         for (let r = 0, rowMax = rows.length; r < rowMax; r++) {
             rowObject = {};
             for (let c = 0, colMax = columns.length; c < colMax; c++) {
-            cellData = rows[r]["c"][c];
-            propName = columns[c].label;
-            if (cellData === null) {
-                rowObject[propName] = "";
-            } 
-            else if (typeof cellData["v"] == "string" &&
-                cellData["v"].startsWith("Date")) 
-            {
-                rowObject[propName] = new Date(cellData["f"]);
-            } else {
-                rowObject[propName] = cellData["v"];
-            }
+                cellData = rows[r]["c"][c];
+                propName = columns[c].label;
+                if (cellData === null) {
+                    rowObject[propName] = "";
+                } 
+                else if (typeof cellData["v"] == "string" &&
+                    cellData["v"].startsWith("Date")) 
+                {
+                    rowObject[propName] = cellData["f"];
+                } else {
+                    rowObject[propName] = cellData["v"];
+                }
             }
             data.push(rowObject);
         }

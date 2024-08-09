@@ -4,61 +4,59 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { getSheetData } from './getSheetData.js';
+import { InputManager } from './input.js';
 import { FSTViewerScene } from './scene.js';
+import { initSettings } from './settings.js';
 
-const fstScene = new FSTViewerScene();
 
+const sheetID = "1EGJgRTOo6Hph2YJcyH14hHgj72eQYHEj-r-8sAJQ3GM";
+const sheetName = "FST Normal Search Ranges"
+
+
+// Set up renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(new THREE.Color(0x202030));
 renderer.domElement.className = "render-canvas";
 document.getElementById("renderContainer").appendChild(renderer.domElement);
 
+// Set up camera
 const aspect = window.innerWidth / window.innerHeight;
+const cameraStartWidth = 10;
 
-const camera = new THREE.PerspectiveCamera(45, aspect, 0.0001, 10);
-camera.position.set(0.35, 1.0, 0.7);
-camera.lookAt(new THREE.Vector3(0.2,0.85,0.55));
+const camera = new THREE.OrthographicCamera(-cameraStartWidth, cameraStartWidth, 
+                                            cameraStartWidth/aspect, -cameraStartWidth/aspect, 
+                                            0.0001, 1000);
+camera.position.set(10, 5, 5);
+camera.lookAt(new THREE.Vector3(0,1.5,0));
 
 const camControls = new OrbitControls(camera, renderer.domElement);
-camControls.target = new THREE.Vector3(0.2,0.85,0.55);
+camControls.target = new THREE.Vector3(0,1.5,0);
 camControls.update();
 
-function assignedBlockDataHandler(sheetData) {
-    console.log("sheet data: ", sheetData);
-    fstScene.setData(sheetData);
-};
+const fstScene = new FSTViewerScene();
+const inputManager = new InputManager(fstScene, camera, camControls, renderer);
 
 function init(){
+    initSettings(fstScene, camera);
+
     window.addEventListener("DOMContentLoaded", (event) => {  
         getSheetData({
-            sheetID: "1RULqmC9ECUHwaoG7hmXnXoaD7qr0p1IaVug1ITZsc9w",
-            sheetName: "Sheet2",
-            query: "SELECT * WHERE D != '' AND D != 'Assigned'",
-            callback: assignedBlockDataHandler,
+            sheetID: "1EGJgRTOo6Hph2YJcyH14hHgj72eQYHEj-r-8sAJQ3GM",
+            sheetName: "FST Normal Search Ranges",
+            query: "SELECT * WHERE J != ''",
+            callback: (sheetData) => { fstScene.setData(sheetData); },
         });
     });
 
     window.addEventListener("resize", () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = window.innerWidth / window.innerHeight;
+        const aspect = window.innerWidth / window.innerHeight;
+        const width = camera.right - camera.left;
+        camera.top = width / aspect / 2;
+        camera.bottom = -width / aspect / 2;
         camera.updateProjectionMatrix();
     });
-
-    window.addEventListener("keydown", (event) => {
-        if(event.key == " ") {
-            fstScene.printScene();
-        }
-
-        if(event.key == "r") {
-            getSheetData({
-                sheetID: "1RULqmC9ECUHwaoG7hmXnXoaD7qr0p1IaVug1ITZsc9w",
-                sheetName: "Sheet2",
-                query: "SELECT * WHERE D != '' AND D != 'Assigned'",
-                callback: assignedBlockDataHandler,
-            });
-        }
-    })
 }
 
 function render() {
