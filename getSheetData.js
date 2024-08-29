@@ -25,7 +25,9 @@ export function getSheetData({ sheetID, sheetName, query, callback }){
         let cellData;
         let propName;
         for (let r = 0, rowMax = rows.length; r < rowMax; r++) {
-            rowObject = {};
+            if(rows[r]["c"][9] === null)
+                continue;
+            rowObject = { index: r+2 }; 
             for (let c = 0, colMax = columns.length; c < colMax; c++) {
                 cellData = rows[r]["c"][c];
                 propName = columns[c].label;

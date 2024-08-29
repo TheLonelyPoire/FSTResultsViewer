@@ -14,8 +14,14 @@ const assignedCubeMaterial = new THREE.MeshBasicMaterial({color : 0x404040,
 const noSolutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0xa01010,
                                                                 transparent : false });
 
+const warningCubeMaterial = new THREE.MeshBasicMaterial({color : 0xff8020,
+                                                                transparent : false}); 
+
 const solutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0x20e020,
-                                                            transparent : false});                                                         
+                                                            transparent : false});    
+
+const solutionWarningCubeMaterial = new THREE.MeshBasicMaterial({color : 0x089020,
+                                                                transparent : false});  
 
 const gridMaterial = new THREE.LineBasicMaterial({color : new THREE.Color(defaults.defaultGridColor),
                                                 side : THREE.DoubleSide,
@@ -347,6 +353,8 @@ export class FSTViewerScene {
 
         var count = 0;
 
+        var rowLinkStart = "https://docs.google.com/spreadsheets/d/1EGJgRTOo6Hph2YJcyH14hHgj72eQYHEj-r-8sAJQ3GM/edit?gid=1853593123&range="
+
         this.#data.forEach(row => {
             const xMin = parseFloat(row["X Normal Min"]);
             const xMax = parseFloat(row["X Normal Max"]);
@@ -371,11 +379,24 @@ export class FSTViewerScene {
             const result = new THREE.Vector3(xC, yC, xzC);
             result.applyMatrix4(transform);
 
+            const error_entry = row["Errors/Warnings Searching Region?"];
+            const treatAsWarning = error_entry != "No" &&
+                                    !(error_entry.includes("Rechecked") &&
+                                      error_entry.includes("Successfully"));
+
             let mat;
-            if(row["Solutions?"] == "Yes")
-                mat = solutionsCubeMaterial;
-            else if(row["Completed?"] == "Yes")
-                mat = noSolutionsCubeMaterial;
+            if(row["Solutions?"] == "Yes"){
+                if(treatAsWarning)
+                    mat = solutionWarningCubeMaterial;
+                else
+                    mat = solutionsCubeMaterial;
+            }
+            else if(row["Completed?"] == "Yes"){
+                if(treatAsWarning)
+                    mat = warningCubeMaterial;
+                else
+                    mat = noSolutionsCubeMaterial;
+            }
             else 
                 mat = assignedCubeMaterial;
 
@@ -404,9 +425,10 @@ export class FSTViewerScene {
             assignedBlockMesh.userData["completed"] = row["Completed?"];
             assignedBlockMesh.userData["solutions"] = row["Solutions?"];
             assignedBlockMesh.userData["stage"] = row["Latest Stage Reached"];
-            assignedBlockMesh.userData["errors"] = row["Errors/Warnings Searching Region?"];
+            assignedBlockMesh.userData["warnings"] = row["Errors/Warnings Searching Region?"];
             assignedBlockMesh.userData["version"] = row["Brute Forcer Version"];
             assignedBlockMesh.userData["solutionsCSV"] = row["Solutions CSV (only provide this if there are solutions)"];
+            assignedBlockMesh.userData["rowHyperlink"] = rowLinkStart + row["index"] + ":" + row["index"];
             
             this.#blocks.add(assignedBlockMesh);
 

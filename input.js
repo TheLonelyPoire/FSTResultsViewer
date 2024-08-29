@@ -46,11 +46,11 @@ export class InputManager {
         this.#selectedCube = null;
         this.#oldSelectedMaterial = null;
 
-        window.addEventListener("mousedown", (event) => {this.mouseDown(event)});
-        window.addEventListener("mouseup", (event) => {this.mouseUp(event)});
+        window.addEventListener("pointerdown", (event) => { this.pointerDown(event); });
+        window.addEventListener("pointerup", (event) => { this.pointerUp(event); });
 
-        window.addEventListener("keydown", (event) => { this.keyDown(event) });
-        window.addEventListener("keyup", (event) => { this.keyUp(event) });
+        window.addEventListener("keydown", (event) => { this.keyDown(event); });
+        window.addEventListener("keyup", (event) => { this.keyUp(event); });
     }
 
     #getActiveLayer() {
@@ -115,7 +115,9 @@ export class InputManager {
 
         const runInfoCompletedLabel = document.getElementById("runInfoCompleted");
         const runInfoSolutionsLabel = document.getElementById("runInfoSolutions");
+        const runInfoWarningsLabel = document.getElementById("runInfoWarnings");
         const runInfoStageLabel = document.getElementById("runInfoStage");
+        const runInfoRowHyperlink = document.getElementById("runInfoRowHyperlink");
 
 
         runInfoXRangeLabel.textContent = "(" + object.userData["xMin"].toFixed(2) + " to "
@@ -132,13 +134,25 @@ export class InputManager {
 
         runInfoCompletedLabel.textContent = object.userData["completed"];
         runInfoSolutionsLabel.textContent = object.userData["solutions"];
+        runInfoWarningsLabel.textContent = object.userData["warnings"];
         runInfoStageLabel.textContent = object.userData["stage"];
+        runInfoRowHyperlink.href = object.userData["rowHyperlink"];
     }
 
-    mouseDown(mouseEvent) {
+    pointerDown(pointerEvent) {
+        // Get the run info element
+        const runInfoWindow = document.getElementById('runInfoWindow');
+        
+        // Check if the run info element is active AND
+        // if the click is within the run info element
+        if (runInfoWindow.className != 'hidden' &&
+            runInfoWindow.contains(pointerEvent.target)) {
+            return; // Exit the function to prevent further processing
+        }
+
         // Get relevant mouse event details
-        const mousePos = new THREE.Vector2(mouseEvent.clientX, mouseEvent.clientY);
-        const mouseButton = mouseEvent.button;
+        const mousePos = new THREE.Vector2(pointerEvent.clientX, pointerEvent.clientY);
+        const mouseButton = pointerEvent.button;
 
         // Normalize mouse position
         const normMousePos = this.#getNoramlizedMousePosition(mousePos);
@@ -147,15 +161,26 @@ export class InputManager {
         const cube = this.#getFirstHoveredCube(normMousePos, this.#camera);
 
         // Update state variables
-        this.#mouseDownEvents[mouseButton] = mouseEvent;
+        this.#mouseDownEvents[mouseButton] = pointerEvent;
         this.#mouseDownPositions[mouseButton] = mousePos;
         this.#mouseDownObjects[mouseButton] = cube;
     }
 
-    mouseUp(mouseEvent) {
+    pointerUp(pointerEvent) {
+        // Get the run info element
+        const runInfoWindow = document.getElementById('runInfoWindow');
+        
+        // Check if the run info element is active AND
+        // if the click is within the run info element
+        if (runInfoWindow.className != 'hidden' &&
+            runInfoWindow.contains(pointerEvent.target)) {
+            this.#clearMouseEvent(mouseButton);
+            return; // Exit the function to prevent further processing
+        }
+
         // Get relevant mouse event details
-        const mousePos = new THREE.Vector2(mouseEvent.clientX, mouseEvent.clientY);
-        const mouseButton = mouseEvent.button;
+        const mousePos = new THREE.Vector2(pointerEvent.clientX, pointerEvent.clientY);
+        const mouseButton = pointerEvent.button;
 
         // Get the mouse down event corresponding to this mouse-up event
         const mouseDownEvent = this.#mouseDownEvents[mouseButton];

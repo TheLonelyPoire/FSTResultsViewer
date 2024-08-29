@@ -44,7 +44,7 @@ function init(){
         getSheetData({
             sheetID: "1EGJgRTOo6Hph2YJcyH14hHgj72eQYHEj-r-8sAJQ3GM",
             sheetName: "FST Normal Search Ranges",
-            query: "SELECT * WHERE J != ''",
+            query: "SELECT * ",
             callback: (sheetData) => { fstScene.setData(sheetData); },
         });
     });
