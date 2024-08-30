@@ -6,28 +6,39 @@ const zoneSize = 0.01;
 const eps = 0.025;
 const cubeSize = 0.2 - eps;
 
-const assignedCubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize,1,1,1);
+const blockCubeGeo = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize,1,1,1);
 
-const assignedCubeMaterial = new THREE.MeshBasicMaterial({color : 0x404040,
-                                                            transparent : false });
-
-const noSolutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0xa01010,
-                                                                transparent : false });
-
-const warningCubeMaterial = new THREE.MeshBasicMaterial({color : 0xff8020,
+ 
+const fullSolutionsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorFullSolutions),
+                                                                transparent : false});                                 
+const fullSolutionsWarningsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorFullSolutionsWarnings),
+                                                                transparent : false});    
+const partialSolutionsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorPartialSolutions),
                                                                 transparent : false}); 
-
-const solutionsCubeMaterial = new THREE.MeshBasicMaterial({color : 0x20e020,
-                                                            transparent : false});    
-
-const solutionWarningCubeMaterial = new THREE.MeshBasicMaterial({color : 0x089020,
-                                                                transparent : false});  
-
+const partialSolutionsWarningsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorPartialSolutionsWarnings),
+                                                                transparent : false});                          
+const noSolutionsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorNoSolutions),
+                                                                transparent : false }); 
+const noSolutionsWarningsBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorNoSolutionsWarnings),
+                                                                transparent : false});
+const incompleteBlockMaterial = new THREE.MeshBasicMaterial({color : new THREE.Color(defaults.defaultColorIncomplete),
+                                                                transparent : false });
+                                                     
 const gridMaterial = new THREE.LineBasicMaterial({color : new THREE.Color(defaults.defaultGridColor),
                                                 side : THREE.DoubleSide,
                                                 depthTest : true,
                                                 transparent : true,
                                                 opacity : defaults.defaultGridOpacity});
+
+const blockMaterialDictionary = {
+    "fullSolutions" : fullSolutionsBlockMaterial,
+    "fullSolutionsWarnings" : fullSolutionsWarningsBlockMaterial,
+    "partialSolutions" : partialSolutionsBlockMaterial,
+    "partialSolutionsWarnings" : partialSolutionsWarningsBlockMaterial,
+    "noSolutions" : noSolutionsBlockMaterial,
+    "noSolutionsWarnings" : noSolutionsWarningsBlockMaterial,
+    "incomplete" : incompleteBlockMaterial
+};
 
 const raycaster = new THREE.Raycaster();
 
@@ -47,6 +58,14 @@ export class FSTViewerScene {
     #axes;
 
     #blocks;
+
+    #incompleteBlocks;
+    #noSolutionsBlocks;
+    #noSolutionsWarningsBlocks;
+    #partialSolutionsBlocks;
+    #partialSolutionsWarningsBlocks;
+    #fullSolutionsBlocks;
+    #fullSolutionsWarningsBlocks;
 
     #minViewXMag;
     #maxViewXMag;
@@ -83,6 +102,23 @@ export class FSTViewerScene {
         this.#scene.add(this.#grids);
 
         this.#blocks = new THREE.Group();
+
+        this.#incompleteBlocks = new THREE.Group();
+        this.#noSolutionsBlocks = new THREE.Group();
+        this.#noSolutionsWarningsBlocks = new THREE.Group();
+        this.#partialSolutionsBlocks = new THREE.Group();
+        this.#partialSolutionsWarningsBlocks = new THREE.Group();
+        this.#fullSolutionsBlocks = new THREE.Group();
+        this.#fullSolutionsWarningsBlocks = new THREE.Group();
+
+        this.#blocks.add(this.#incompleteBlocks);
+        this.#blocks.add(this.#noSolutionsBlocks);
+        this.#blocks.add(this.#noSolutionsWarningsBlocks);
+        this.#blocks.add(this.#partialSolutionsBlocks);
+        this.#blocks.add(this.#partialSolutionsWarningsBlocks);
+        this.#blocks.add(this.#fullSolutionsBlocks);
+        this.#blocks.add(this.#fullSolutionsWarningsBlocks);
+
         this.#scene.add(this.#blocks);
 
         this.#gridGeos = [];
@@ -349,7 +385,13 @@ export class FSTViewerScene {
     }
 
     generateBlocks(){
-        this.#blocks.clear();
+        this.#incompleteBlocks.clear();
+        this.#noSolutionsBlocks.clear();
+        this.#noSolutionsWarningsBlocks.clear();
+        this.#partialSolutionsBlocks.clear();
+        this.#partialSolutionsWarningsBlocks.clear();
+        this.#fullSolutionsBlocks.clear();
+        this.#fullSolutionsWarningsBlocks.clear();
 
         var count = 0;
 
@@ -384,53 +426,73 @@ export class FSTViewerScene {
                                     !(error_entry.includes("Rechecked") &&
                                       error_entry.includes("Successfully"));
 
-            let mat;
-            if(row["Solutions?"] == "Yes"){
-                if(treatAsWarning)
-                    mat = solutionWarningCubeMaterial;
-                else
-                    mat = solutionsCubeMaterial;
-            }
-            else if(row["Completed?"] == "Yes"){
-                if(treatAsWarning)
-                    mat = warningCubeMaterial;
-                else
-                    mat = noSolutionsCubeMaterial;
-            }
-            else 
-                mat = assignedCubeMaterial;
 
-            const assignedBlockMesh = new THREE.Mesh(assignedCubeGeo, mat);
-            assignedBlockMesh.position.copy(result);
+            let blockMesh = new THREE.Mesh(blockCubeGeo, incompleteBlockMaterial);
+            if(row["Solutions?"] != "Yes"){
+                if(row["Completed?"] == "Yes"){
+                    if(treatAsWarning){
+                        blockMesh.material = noSolutionsWarningsBlockMaterial;
+                        this.#noSolutionsWarningsBlocks.add(blockMesh);
+                    }
+                    else{
+                        blockMesh.material = noSolutionsBlockMaterial;
+                        this.#noSolutionsBlocks.add(blockMesh);
+                    }
+                }
+                else {
+                    this.#incompleteBlocks.add(blockMesh);
+                }
+            }
+            else if(row["Latest Stage Reached"] != "11"){
+                if(treatAsWarning){
+                    blockMesh.material = partialSolutionsWarningsBlockMaterial;
+                    this.#partialSolutionsWarningsBlocks.add(blockMesh);
+                }
+                else {
+                    blockMesh.material = partialSolutionsBlockMaterial;
+                    this.#partialSolutionsBlocks.add(blockMesh);
+                }
+            }
+            else {
+                if(treatAsWarning) {
+                    blockMesh.material = fullSolutionsWarningsBlockMaterial;
+                    this.#fullSolutionsWarningsBlocks.add(blockMesh);
+                }
+                else {
+                    blockMesh.material = fullSolutionsBlockMaterial;
+                    this.#fullSolutionsBlocks.add(blockMesh);
+                }
+            }
+
+
+            blockMesh.position.copy(result);
             if(row["Platform X"] == "-1945")
-                assignedBlockMesh.layers.set(FSTViewerScene.PYRA_LAYER);
+                blockMesh.layers.set(FSTViewerScene.PYRA_LAYER);
             else
-                assignedBlockMesh.layers.set(FSTViewerScene.MYTHRA_LAYER);
+                blockMesh.layers.set(FSTViewerScene.MYTHRA_LAYER);
 
             // Add sheet data
-            assignedBlockMesh.userData["xMin"] = xMin;
-            assignedBlockMesh.userData["xMax"] = xMax;
-            assignedBlockMesh.userData["yMin"] = yMin;
-            assignedBlockMesh.userData["yMax"] = yMax;
-            assignedBlockMesh.userData["xzMin"] = xzMin;
-            assignedBlockMesh.userData["xzMax"] = xzMax;
+            blockMesh.userData["xMin"] = xMin;
+            blockMesh.userData["xMax"] = xMax;
+            blockMesh.userData["yMin"] = yMin;
+            blockMesh.userData["yMax"] = yMax;
+            blockMesh.userData["xzMin"] = xzMin;
+            blockMesh.userData["xzMax"] = xzMax;
 
             if(row["Platform X"] == "-1945")
-                assignedBlockMesh.userData["platform"] = "Pyra (X = -1945)";
+                blockMesh.userData["platform"] = "Pyra (X = -1945)";
             else
-                assignedBlockMesh.userData["platform"] = "Mythra (X = -2866)";
+                blockMesh.userData["platform"] = "Mythra (X = -2866)";
 
-            assignedBlockMesh.userData["name"] = row["Name"];
-            assignedBlockMesh.userData["date"] = row["Date Started"];
-            assignedBlockMesh.userData["completed"] = row["Completed?"];
-            assignedBlockMesh.userData["solutions"] = row["Solutions?"];
-            assignedBlockMesh.userData["stage"] = row["Latest Stage Reached"];
-            assignedBlockMesh.userData["warnings"] = row["Errors/Warnings Searching Region?"];
-            assignedBlockMesh.userData["version"] = row["Brute Forcer Version"];
-            assignedBlockMesh.userData["solutionsCSV"] = row["Solutions CSV (only provide this if there are solutions)"];
-            assignedBlockMesh.userData["rowHyperlink"] = rowLinkStart + row["index"] + ":" + row["index"];
-            
-            this.#blocks.add(assignedBlockMesh);
+            blockMesh.userData["name"] = row["Name"];
+            blockMesh.userData["date"] = row["Date Started"];
+            blockMesh.userData["completed"] = row["Completed?"];
+            blockMesh.userData["solutions"] = row["Solutions?"];
+            blockMesh.userData["stage"] = row["Latest Stage Reached"];
+            blockMesh.userData["warnings"] = row["Errors/Warnings Searching Region?"];
+            blockMesh.userData["version"] = row["Brute Forcer Version"];
+            blockMesh.userData["solutionsCSV"] = row["Solutions CSV (only provide this if there are solutions)"];
+            blockMesh.userData["rowHyperlink"] = rowLinkStart + row["index"] + ":" + row["index"];
 
             count++;
         });
@@ -450,6 +512,36 @@ export class FSTViewerScene {
 
         this.#generateGrids();
         this.generateBlocks();
+    }
+
+    setBlockColor(groupName, color) {
+        blockMaterialDictionary[groupName].color = new THREE.Color(color);
+    }
+
+    setBlockVisibile(groupName, visible) {
+        switch(groupName){
+            case "fullSolutions":
+                this.#fullSolutionsBlocks.visible = visible;
+                break;
+            case "fullSolutionsWarnings":
+                this.#fullSolutionsWarningsBlocks.visible = visible;
+                break;
+            case "partialSolutions":
+                this.#partialSolutionsBlocks.visible = visible;
+                break;
+            case "partialSolutionsWarnings":
+                this.#partialSolutionsWarningsBlocks.visible = visible;
+                break;
+            case "noSolutions":
+                this.#noSolutionsBlocks.visible = visible;
+                break;
+            case "noSolutionsWarnings":
+                this.#noSolutionsWarningsBlocks.visible = visible;
+                break;
+            case "incomplete":
+                this.#incompleteBlocks.visible = visible;
+                break;
+        }
     }
 
     setGridEnabled(enabled) {

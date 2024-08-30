@@ -153,6 +153,34 @@ function initSliceTool(fstScene) {
 }
 
 
+function initBlockToggleAndColorSettings(fstScene, groupName) {
+    const blockColorPicker = document.getElementById(groupName + "ColorPicker");
+    const blockToggle = document.getElementById(groupName + "BlockToggle");
+
+    blockColorPicker.addEventListener('input', () => {
+        fstScene.setBlockColor(groupName, blockColorPicker.value);
+    });
+
+    blockToggle.addEventListener('change', () => {
+        fstScene.setBlockVisibile(groupName, blockToggle.checked);
+    });
+
+    const groupNameUpper = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+    blockColorPicker.value = defaults["defaultColor" + groupNameUpper];
+}
+
+
+function initBlockSettings(fstScene) {
+    initBlockToggleAndColorSettings(fstScene, "fullSolutions");
+    initBlockToggleAndColorSettings(fstScene, "fullSolutionsWarnings");
+    initBlockToggleAndColorSettings(fstScene, "partialSolutions");
+    initBlockToggleAndColorSettings(fstScene, "partialSolutionsWarnings");
+    initBlockToggleAndColorSettings(fstScene, "noSolutions");
+    initBlockToggleAndColorSettings(fstScene, "noSolutionsWarnings");
+    initBlockToggleAndColorSettings(fstScene, "incomplete");
+}
+
+
 function initGridEnable(fstScene) {
     const gridToggle = document.getElementById("gridToggle");
     const gridColorPicker = document.getElementById("gridColorPicker");
@@ -210,5 +238,6 @@ function initGridSettings(fstScene) {
 export function initSettings(fstScene, camera) {
     initPlatformDropdown(camera);
     initSliceTool(fstScene);
+    initBlockSettings(fstScene);
     initGridSettings(fstScene);
 }

@@ -60,6 +60,13 @@ body {
     color: white;
 }
 
+.user-settings-text-lvl1-padding {
+    font-family: "SM64";
+    font-size: 28px;
+    color: white;
+    padding-bottom: 5px;
+}
+
 .user-settings-text-lvl2 {
     font-family: "SM64";
     font-size: 20px;
@@ -77,6 +84,10 @@ body {
     font-size: 16px;
     text-align: center;
     color: white;
+}
+
+.user-settings-toggle-label {
+    padding-right: 0px;
 }
 
 input[type="color"] {

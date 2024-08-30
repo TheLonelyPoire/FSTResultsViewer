@@ -14,6 +14,14 @@ export const defaults = {
     defaultSliceAxis: "Y",
     defaultSliceValue: 0.85,
 
+    defaultColorFullSolutions: "#ffffff",
+    defaultColorFullSolutionsWarnings: "#80ffff",
+    defaultColorPartialSolutions: "#20ff20",
+    defaultColorPartialSolutionsWarnings: "#088020",
+    defaultColorNoSolutions: "#800808",
+    defaultColorNoSolutionsWarnings: "#ff8020",
+    defaultColorIncomplete: "#404040",
+
     defaultGridEnabled: true,
     defaultGridColor: "#808080",
     defaultGridOpacity: 0.05,

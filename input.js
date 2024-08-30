@@ -141,8 +141,17 @@ export class InputManager {
 
     pointerDown(pointerEvent) {
         // Get the run info element
-        const runInfoWindow = document.getElementById('runInfoWindow');
+        const settingsWindow = document.getElementById('userSettingsContainer');
         
+        // Check if the run info element is active AND
+        // if the click is within the run info element
+        if (settingsWindow.contains(pointerEvent.target)) {
+            return; // Exit the function to prevent further processing
+        }
+        
+        // Get the run info element
+        const runInfoWindow = document.getElementById('runInfoWindow');
+
         // Check if the run info element is active AND
         // if the click is within the run info element
         if (runInfoWindow.className != 'hidden' &&
@@ -167,6 +176,15 @@ export class InputManager {
     }
 
     pointerUp(pointerEvent) {
+        // Get the run info element
+        const settingsWindow = document.getElementById('userSettingsContainer');
+
+        // Check if the run info element is active AND
+        // if the click is within the run info element
+        if (settingsWindow.contains(pointerEvent.target)) {
+            return; // Exit the function to prevent further processing
+        }
+
         // Get the run info element
         const runInfoWindow = document.getElementById('runInfoWindow');
         
