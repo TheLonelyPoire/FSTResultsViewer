@@ -103,21 +103,21 @@ export class FSTViewerScene {
 
         this.#blocks = new THREE.Group();
 
-        this.#incompleteBlocks = new THREE.Group();
-        this.#noSolutionsBlocks = new THREE.Group();
-        this.#noSolutionsWarningsBlocks = new THREE.Group();
-        this.#partialSolutionsBlocks = new THREE.Group();
-        this.#partialSolutionsWarningsBlocks = new THREE.Group();
         this.#fullSolutionsBlocks = new THREE.Group();
         this.#fullSolutionsWarningsBlocks = new THREE.Group();
+        this.#partialSolutionsBlocks = new THREE.Group();
+        this.#partialSolutionsWarningsBlocks = new THREE.Group();
+        this.#noSolutionsBlocks = new THREE.Group();
+        this.#noSolutionsWarningsBlocks = new THREE.Group();
+        this.#incompleteBlocks = new THREE.Group();
 
-        this.#blocks.add(this.#incompleteBlocks);
-        this.#blocks.add(this.#noSolutionsBlocks);
-        this.#blocks.add(this.#noSolutionsWarningsBlocks);
-        this.#blocks.add(this.#partialSolutionsBlocks);
-        this.#blocks.add(this.#partialSolutionsWarningsBlocks);
         this.#blocks.add(this.#fullSolutionsBlocks);
         this.#blocks.add(this.#fullSolutionsWarningsBlocks);
+        this.#blocks.add(this.#partialSolutionsBlocks);
+        this.#blocks.add(this.#partialSolutionsWarningsBlocks);
+        this.#blocks.add(this.#noSolutionsBlocks);
+        this.#blocks.add(this.#noSolutionsWarningsBlocks);
+        this.#blocks.add(this.#incompleteBlocks);
 
         this.#scene.add(this.#blocks);
 

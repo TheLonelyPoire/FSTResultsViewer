@@ -73,13 +73,20 @@ export class InputManager {
             // Get closest intersection
             const closestIntersection = intersects.shift();
 
+            const obj = closestIntersection.object;
+
             // Skip any non-objects
-            if(!(closestIntersection.object instanceof THREE.Object3D)) {  
+            if(!(obj instanceof THREE.Object3D)) {  
                 continue;
             }
 
             // Skip any line objects if clickLines argument is false
-            if(closestIntersection.object instanceof THREE.Line) {
+            if(obj instanceof THREE.Line) {
+                continue;
+            }
+
+            // Skip any invisible objects
+            if(!obj.visible || (obj.parent != null && !obj.parent.visible)) {
                 continue;
             }
             
