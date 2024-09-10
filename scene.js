@@ -421,15 +421,15 @@ export class FSTViewerScene {
             const result = new THREE.Vector3(xC, yC, xzC);
             result.applyMatrix4(transform);
 
-            const error_entry = row["Errors/Warnings Searching Region?"];
-            const treatAsWarning = error_entry != "No" &&
-                                    !(error_entry.includes("Rechecked") &&
-                                      error_entry.includes("Successfully"));
+            const error_entry = row["Errors/Warnings Searching Region?"].toLowerCase();
+            const treatAsWarning = error_entry != "no" &&
+                                    !(error_entry.includes("rechecked") &&
+                                      error_entry.includes("successfully"));
 
 
             let blockMesh = new THREE.Mesh(blockCubeGeo, incompleteBlockMaterial);
-            if(row["Solutions?"] != "Yes"){
-                if(row["Completed?"] == "Yes"){
+            if(row["Solutions?"].toLowerCase() != "yes"){
+                if(row["Completed?"].toLowerCase() == "yes"){
                     if(treatAsWarning){
                         blockMesh.material = noSolutionsWarningsBlockMaterial;
                         this.#noSolutionsWarningsBlocks.add(blockMesh);
